@@ -2110,15 +2110,26 @@ let currentAccount = null; // دائماً يبدأ بدون حساب - لازم
 const DEFAULT_ROLES = {
   admin:     {label:'مدير العيادة', perms:['view','edit','delete','accounts','settings','reports','rx','notes','cal','sms','payments_view','payments_edit','payments_add_only','casesheet_delete','worknotes_delete','cal_owner_edit','casesheet_owner','contact_view','expenses_view','expenses_edit']},
   doctor:    {label:'طبيب', perms:['view','edit','cal','notes','casesheet_owner','cal_owner_edit','contact_view']},
-  reception: {label:'ريسيبشن', perms:['view','edit','cal','notes','sms','payments_add_only','casesheet_delete','cal_owner_edit']},
+  reception: {label:'ريسيبشن', perms:['view','edit','cal','notes','sms','payments_add_only','casesheet_delete','cal_owner_edit','casesheet_owner']},
   readonly:  {label:'قراءة فقط', perms:['view']}
 };
 let ROLES = JSON.parse(localStorage.getItem('clinic_roles_v2') || 'null') || JSON.parse(JSON.stringify(DEFAULT_ROLES));
+// ترحيل: منح الريسيبشن رؤية كل الكيسشيتات (مرة واحدة — يبقى قابلاً للإطفاء من الصلاحيات)
+if(!localStorage.getItem('mig_rec_seeall_v1')){
+  try{
+    if(ROLES.reception && !ROLES.reception.perms.includes('casesheet_owner')){
+      ROLES.reception.perms.push('casesheet_owner');
+      localStorage.setItem('clinic_roles_v2', JSON.stringify(ROLES));
+    }
+  }catch(e){}
+  localStorage.setItem('mig_rec_seeall_v1','1');
+}
 function saveRoles(){ localStorage.setItem('clinic_roles_v2', JSON.stringify(ROLES)); try{fbPushSettings();}catch(e){} }
 
 // تعريف كل صلاحية مع نصها
 const PERMS_DEF = {
   reception: [
+    {key:'casesheet_owner', label:'السماح للريسيبشن برؤية كل الكيسشيتات (كل الحسابات، وليس كيسشيتاته فقط)'},
     {key:'payments_hide',   label:'منع الريسيبشن من رؤية تفاصيل الحسابات و الدفعات المالية في داخل خانة الكيسشيت', invert:true, target:'payments_view'},
     {key:'payments_edit',   label:'السماح للريسيبشن باضافة و تعديل الدفعات المالية للمرضى في خانة الكيسشيت'},
     {key:'payments_add_only',label:'السماح لحساب الريسيبشن باضافة الدفعات المالية الجديدة فقط بدون القدرة على التعديل على الدفعات القديمة'},
@@ -3299,6 +3310,7 @@ function loadPrintImg(type,input){
     if(type==='header'){
       printHeaderImg=b64;
       localStorage.setItem('print_header_img',b64);
+      try{fbPushImage('print_header_img');}catch(e){}
       const img=document.getElementById('header-img-preview');
       const ph=document.getElementById('header-img-placeholder');
       if(img){img.src=b64;img.style.display='';}
@@ -3306,6 +3318,7 @@ function loadPrintImg(type,input){
     } else {
       printFooterImg=b64;
       localStorage.setItem('print_footer_img',b64);
+      try{fbPushImage('print_footer_img');}catch(e){}
       const img=document.getElementById('footer-img-preview');
       const ph=document.getElementById('footer-img-placeholder');
       if(img){img.src=b64;img.style.display='';}
@@ -3320,6 +3333,7 @@ function clearPrintImg(type){
   if(type==='header'){
     printHeaderImg='';
     localStorage.removeItem('print_header_img');
+    try{fbPushImage('print_header_img');}catch(e){}
     const img=document.getElementById('header-img-preview');
     const ph=document.getElementById('header-img-placeholder');
     if(img){img.src='';img.style.display='none';}
@@ -3327,6 +3341,7 @@ function clearPrintImg(type){
   } else {
     printFooterImg='';
     localStorage.removeItem('print_footer_img');
+    try{fbPushImage('print_footer_img');}catch(e){}
     const img=document.getElementById('footer-img-preview');
     const ph=document.getElementById('footer-img-placeholder');
     if(img){img.src='';img.style.display='none';}
@@ -3364,11 +3379,13 @@ function loadRxImg(type,input){
     const b64=e.target.result;
     if(type==='header'){
       rxHeaderImg=b64;localStorage.setItem('rx_header_img',b64);
+      try{fbPushImage('rx_header_img');}catch(e){}
       const img=document.getElementById('rx-header-preview');
       const ph=document.getElementById('rx-header-placeholder');
       if(img){img.src=b64;img.style.display='';}if(ph)ph.style.display='none';
     } else {
       rxFooterImg=b64;localStorage.setItem('rx_footer_img',b64);
+      try{fbPushImage('rx_footer_img');}catch(e){}
       const img=document.getElementById('rx-footer-preview');
       const ph=document.getElementById('rx-footer-placeholder');
       if(img){img.src=b64;img.style.display='';}if(ph)ph.style.display='none';
@@ -3381,11 +3398,13 @@ function loadRxImg(type,input){
 function clearRxImg(type){
   if(type==='header'){
     rxHeaderImg='';localStorage.removeItem('rx_header_img');
+    try{fbPushImage('rx_header_img');}catch(e){}
     const img=document.getElementById('rx-header-preview');
     const ph=document.getElementById('rx-header-placeholder');
     if(img){img.src='';img.style.display='none';}if(ph)ph.style.display='';
   } else {
     rxFooterImg='';localStorage.removeItem('rx_footer_img');
+    try{fbPushImage('rx_footer_img');}catch(e){}
     const img=document.getElementById('rx-footer-preview');
     const ph=document.getElementById('rx-footer-placeholder');
     if(img){img.src='';img.style.display='none';}if(ph)ph.style.display='';
@@ -6291,11 +6310,46 @@ function applyRemoteSettings(s){
     console.log('⚙️ الإعدادات مُزامنة من السحابة');
   }finally{setTimeout(()=>{_settingsApplying=false;},100);}
 }
+// صور الشعار والهيدر والفوتر (الوصولات والوصفة) — مزامنة سحابية
+const SYNC_IMG_KEYS=['print_header_img','print_footer_img','rx_header_img','rx_footer_img'];
+function fbPushImage(key){
+  if(_settingsApplying)return;
+  if(!(typeof dbFS!=='undefined'&&dbFS&&currentUserUid))return;
+  const data=localStorage.getItem(key)||'';
+  if(data.length>950000){console.warn(key+': الصورة أكبر من حد المزامنة (1MB) — بقيت محلياً فقط');return;}
+  const ts=Date.now();
+  localStorage.setItem(key+'_ts',String(ts));
+  dbFS.collection('clinics').doc(currentUserUid).collection('meta').doc('img_'+key)
+    .set({data:data,_ts:ts}).catch(e=>console.warn('img push failed:',e.message));
+}
+function applyRemoteImage(key,payload){
+  if(!payload)return;
+  const localTs=parseInt(localStorage.getItem(key+'_ts')||'0');
+  if((payload._ts||0)<=localTs)return;
+  _settingsApplying=true;
+  try{
+    if(payload.data){localStorage.setItem(key,payload.data);}
+    else{localStorage.removeItem(key);}
+    localStorage.setItem(key+'_ts',String(payload._ts||Date.now()));
+    // تحديث المتغيرات الحية
+    if(key==='print_header_img')printHeaderImg=payload.data||'';
+    if(key==='print_footer_img')printFooterImg=payload.data||'';
+    if(key==='rx_header_img')rxHeaderImg=payload.data||'';
+    if(key==='rx_footer_img')rxFooterImg=payload.data||'';
+    console.log('🖼️ '+key+' مُزامن من السحابة');
+  }finally{setTimeout(()=>{_settingsApplying=false;},100);}
+}
 function listenToSettings(){
   if(!(dbFS&&currentUserUid))return;
-  dbFS.collection('clinics').doc(currentUserUid).collection('meta').doc('settings')
-    .onSnapshot(doc=>{if(doc.exists)applyRemoteSettings(doc.data());},
-      e=>console.warn('settings listen:',e.message));
+  // مستمع واحد لكل مستندات meta: الإعدادات + الصور
+  dbFS.collection('clinics').doc(currentUserUid).collection('meta')
+    .onSnapshot(snap=>{
+      snap.docChanges().forEach(ch=>{
+        const id=ch.doc.id;
+        if(id==='settings')applyRemoteSettings(ch.doc.data());
+        else if(id.startsWith('img_'))applyRemoteImage(id.slice(4),ch.doc.data());
+      });
+    }, e=>console.warn('settings listen:',e.message));
 }
 
 function updateSyncStatus(state){

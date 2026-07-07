@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="ابو عزّ">
 <meta name="theme-color" content="#2ab5a0">
 <meta name="description" content="نظام إدارة عيادة الأسنان">
-<title>EasyClinic — إدارة العيادة</title>
+<title>إدارة العيادة</title>
 <link rel="manifest" id="pwa-manifest">
 <link rel="apple-touch-icon" id="pwa-icon-link">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -224,11 +224,11 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
 .pay-r input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 11px;color:var(--text);font-size:12px;direction:rtl;font-family:inherit;}
 .ctag{background:var(--card2);border:1px solid var(--teal);border-radius:6px;padding:7px 11px;font-size:11px;color:var(--teal);white-space:nowrap;font-weight:700;}
 .tog-w{display:flex;align-items:center;gap:10px;margin-bottom:14px;background:var(--bg);padding:8px 12px;border-radius:8px;}
-.tog{width:46px;height:24px;border-radius:12px;background:var(--green);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;}
+.tog{width:58px;height:30px;border-radius:15px;background:var(--green);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;}
 .tog.off{background:var(--muted);}
-.tog::after{content:'';position:absolute;right:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:right .2s;}
-.tog.off::after{right:25px;}
-.tog-lbl{font-size:13px;font-weight:700;color:var(--teal);}
+.tog::after{content:'';position:absolute;right:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:right .2s;}
+.tog.off::after{right:31px;}
+.tog-lbl{font-size:15px;font-weight:700;color:var(--teal);}
 .md-ft{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;}
 .teeth-w{margin-bottom:10px;}
 .teeth-r{display:flex;gap:2px;justify-content:center;margin-bottom:2px;}
@@ -649,9 +649,9 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
 <div class="page" id="p-rev">
   <div class="rev-bar">
     <span style="font-size:11px;color:var(--muted);">من تاريخ</span>
-    <input type="date" value="2026-06-01" style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-size:11px;">
+    <input type="date" id="rev-from" onchange="rRev()" style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-size:11px;">
     <span style="font-size:11px;color:var(--muted);">الى تاريخ</span>
-    <input type="date" value="2026-06-30" style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-size:11px;">
+    <input type="date" id="rev-to" onchange="rRev()" style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-size:11px;">
 
     <button class="btn bg2" style="margin-right:auto;" onclick="rRev()"><i class="ti ti-chart-bar"></i> تقرير الايرادات</button>
     <button class="btn bd" style="padding:6px 9px;" onclick="window.print()"><i class="ti ti-printer"></i></button>
@@ -1037,6 +1037,10 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
         <button onclick="exportAllPDF()" style="background:#e74c3c;border:none;border-radius:8px;padding:10px 20px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;"><i class="ti ti-file-type-pdf"></i> تنزيل PDF</button>
       </div>
       <input type="file" id="pdf-import-input" accept=".pdf" multiple style="display:none;" onchange="readPDFFiles(this)">
+      <div style="background:rgba(255,140,0,.08);border:1px solid rgba(255,140,0,.25);border-radius:8px;padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+        <div><div style="font-size:13px;font-weight:700;color:#ff8c00;margin-bottom:3px;">مسح الكيسشيتات والمواعيد فقط</div><div style="font-size:11px;color:var(--muted);">يحذف كل الكيسشيتات والمواعيد (محلياً ومن السحابة) — تبقى الحسابات والإعدادات والملاحظات والصرفيات</div></div>
+        <button onclick="clearCasesAndAppts()" style="background:#ff8c00;border:none;border-radius:8px;padding:10px 20px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;white-space:nowrap;"><i class="ti ti-eraser"></i> مسح الكيسشيتات والمواعيد</button>
+      </div>
       <div style="background:rgba(255,23,68,.08);border:1px solid rgba(255,23,68,.2);border-radius:8px;padding:14px;display:flex;align-items:center;justify-content:space-between;">
         <div><div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:3px;">مسح كل شيء وإعادة الضبط</div><div style="font-size:11px;color:var(--muted);">يمسح المرضى، المواعيد، إعدادات Firebase، الحسابات، كل بيانات المتصفح</div></div>
         <button onclick="clearAllData()" style="background:var(--red);border:none;border-radius:8px;padding:10px 20px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;"><i class="ti ti-trash"></i> مسح الكل وإعادة الضبط</button>
@@ -1297,12 +1301,12 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">✏️ تخصيص اسم العيادة في شاشة الدخول</div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
           <span style="font-size:12px;color:var(--muted);min-width:60px;">السطر الأول</span>
-          <input id="clinic-name-line1" type="text" placeholder="DR. MUHANAD"
+          <input id="clinic-name-line1" type="text" placeholder="MY DENTAL"
             style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;direction:ltr;text-align:left;outline:none;">
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
           <span style="font-size:12px;color:var(--muted);min-width:60px;">السطر الثاني</span>
-          <input id="clinic-name-line2" type="text" placeholder="MADEED"
+          <input id="clinic-name-line2" type="text" placeholder="CLINIC"
             style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;direction:ltr;text-align:left;outline:none;">
         </div>
         <button onclick="saveClinicName()" style="width:100%;background:var(--teal);border:none;border-radius:8px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">💾 حفظ الاسم</button>
@@ -1633,7 +1637,7 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
       </div>
       <button class="btn bd" style="width:100%;" onclick="showInv()"><i class="ti ti-printer"></i> طباعة الكيشتيت</button>
     </div>
-    <div class="md-ft" style="display:flex;gap:8px;align-items:center;">
+    <div class="md-ft" style="display:flex;gap:8px;align-items:center;position:sticky;bottom:0;background:var(--card);z-index:10;box-shadow:0 -4px 12px rgba(0,0,0,.25);">
       <button class="btn br" onclick="delCurrentPt()" style="padding:10px 16px;white-space:nowrap;"><i class="ti ti-trash"></i> حذف</button>
       <button class="btn bd" onclick="cxForce('m-k')" style="padding:10px 16px;white-space:nowrap;">إلغاء</button>
       <button class="btn bt" onclick="saveK()" style="flex:1;"><i class="ti ti-device-floppy"></i> حفظ التغييرات</button>
@@ -1808,6 +1812,7 @@ function initFirebase() {
 
     currentUserUid = 'default_doctor';
     listenToFirebaseChanges();
+    listenToSettings();
 
     updateFbMenuLabel(true);
     console.log('Firebase connected — auto-sync ON');
@@ -2109,7 +2114,7 @@ const DEFAULT_ROLES = {
   readonly:  {label:'قراءة فقط', perms:['view']}
 };
 let ROLES = JSON.parse(localStorage.getItem('clinic_roles_v2') || 'null') || JSON.parse(JSON.stringify(DEFAULT_ROLES));
-function saveRoles(){ localStorage.setItem('clinic_roles_v2', JSON.stringify(ROLES)); }
+function saveRoles(){ localStorage.setItem('clinic_roles_v2', JSON.stringify(ROLES)); try{fbPushSettings();}catch(e){} }
 
 // تعريف كل صلاحية مع نصها
 const PERMS_DEF = {
@@ -2205,7 +2210,7 @@ function toggleRoleSection(sec){
 }
 
 
-function saveAccounts(){ localStorage.setItem('clinic_accounts', JSON.stringify(ACCOUNTS)); }
+function saveAccounts(){ localStorage.setItem('clinic_accounts', JSON.stringify(ACCOUNTS)); try{fbPushSettings();}catch(e){} }
 
 // يجلب لون الحساب حسب الاسم
 function getAccColor(name){
@@ -3804,7 +3809,8 @@ function saveClinicName(){
   if(l1) localStorage.setItem('clinic_name_line1', l1);
   if(l2) localStorage.setItem('clinic_name_line2', l2);
   applyClinicName();
-  alert('✓ تم حفظ اسم العيادة');
+  try{fbPushSettings();}catch(e){}
+  alert('✓ تم حفظ اسم العيادة — سيُزامن مع السحابة');
 }
 
 function applyClinicName(){
@@ -4147,7 +4153,22 @@ function printSelectedAppts(){
   const html=`<html><head><meta charset="utf-8">
   <style>
     body{font-family:Arial,sans-serif;direction:rtl;padding:20px;max-width:400px;margin:0 auto;}
-    @media print{body{max-width:100%;}}
+    .invoice-container{width:100%;box-sizing:border-box;}
+    .row{display:flex;justify-content:space-between;width:100%;}
+    @media print{
+      @page{margin:0;size:80mm auto;}
+      html,body{margin:0;padding:0;}
+      body{direction:rtl;width:80mm;max-width:80mm;box-sizing:border-box;margin:0;padding:3mm 8mm;font-size:11px;overflow:hidden;text-align:center;}
+      table{width:100% !important;font-size:10px !important;margin:0 auto !important;}
+      th,td{padding:3px !important;text-align:center !important;}
+      div{text-align:center !important;}
+      *{max-width:100%;word-wrap:break-word;color:#000;}
+    }
+    /* طابعة حرارية أبيض وأسود — كل شيء أسود صافٍ */
+    *{color:#000 !important;border-color:#000 !important;}
+    .title-bar,tr[style*="background:#000"],th{background:#000 !important;color:#fff !important;}
+    .title-bar *,th *{color:#fff !important;}
+
     .header{text-align:center;margin-bottom:16px;}
     .logo-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;}
     .logo-text{font-size:20px;font-weight:900;letter-spacing:1px;line-height:1.2;}
@@ -4275,6 +4296,20 @@ function adjT(m){
 }
 
 // ===== CONTACT/SMS PAGE =====
+// الانتقال من التواصل الى قائمة الكيسشيتات مع كتابة الاسم في البحث
+function goToCasesheets(name){
+  go('pts', document.querySelector('.nav-pts'));
+  if(typeof searchType!=='undefined') searchType='اسم المريض';
+  const st=document.getElementById('search-type-lbl');
+  if(st) st.textContent='اسم المريض';
+  const inp=document.getElementById('s-inp');
+  if(inp){
+    inp.value=name;
+    fPts(name);
+    setTimeout(()=>inp.focus(),100);
+  }
+}
+
 let smsFilters=new Set();
 
 function setSmsFilter(f,el){
@@ -4340,7 +4375,7 @@ function rSms(){
         <i class="ti ${isF?'ti-user-circle':'ti-user'}" style="font-size:22px;color:${isF?'var(--pink)':'var(--teal)'};"></i>
       </div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:700;">${p.n}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--teal);text-decoration:underline;text-underline-offset:3px;cursor:pointer;" title="عرض الكيسشيتات المتعلقة" onclick="event.stopPropagation();goToCasesheets('${(p.n||'').replace(/'/g,"\\'")}')">${p.n}</div>
         <div style="font-size:11px;color:var(--muted);">(${p.ph})</div>
       </div>
       <div style="font-size:11px;color:var(--muted);min-width:60px;text-align:center;">NaN--</div>
@@ -4844,24 +4879,54 @@ function rRev(){
     }).join('')}`
     :`<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">لا توجد كيشتيات في هذا اليوم</div>`;
 
-  // === التقرير الشامل — مفلتر حسب نطاق التاريخ ===
-  const revFrom=document.querySelector('.rev-bar input[type="date"]:first-of-type')?.value||'';
-  const revTo=document.querySelector('.rev-bar input[type="date"]:last-of-type')?.value||'';
-  const groups={};
-  PTS.filter(p=>{
-    if(!revFrom&&!revTo)return true;
-    const d=p.date||'';
+  // === التقرير الشامل — كل القيم محسوبة حسب الفترة المحددة ===
+  const fromEl=document.getElementById('rev-from');
+  const toEl=document.getElementById('rev-to');
+  // تهيئة افتراضية: الشهر الحالي من أول يوم حتى اليوم
+  if(fromEl&&!fromEl.value){
+    const now=new Date();
+    fromEl.value=now.toISOString().slice(0,8)+'01';
+  }
+  if(toEl&&!toEl.value) toEl.value=new Date().toISOString().split('T')[0];
+  const revFrom=fromEl?.value||'';
+  const revTo=toEl?.value||'';
+  const inRange=d=>{
+    d=(d||'').slice(0,10);
+    if(!d)return false;
     if(revFrom&&d<revFrom)return false;
     if(revTo&&d>revTo)return false;
     return true;
-  }).forEach(p=>{
+  };
+
+  // الكيسشيتات التي تقع ضمن الفترة (حسب تاريخها)
+  const rangePts=PTS.filter(p=>inRange(p.date||p.edited));
+  const groups={};
+  // عدد الحالات والديون: من كيسشيتات الفترة
+  rangePts.forEach(p=>{
     const c=p.case||'أخرى';
     if(!groups[c])groups[c]={count:0,paid:0,debt:0};
     groups[c].count++;
-    const tot=parseFloat(p.tot)||0;
-    const paid=tot-(parseFloat(p.dbt)||0);
-    groups[c].paid+=paid;
     groups[c].debt+=Math.max(0,parseFloat(p.dbt)||0);
+  });
+  // الدفعات المستلمة: حسب تاريخ كل دفعة ضمن الفترة (من كل الكيسشيتات)
+  let rangePayCount=0;
+  PTS.forEach(p=>{
+    (p.payments||[]).forEach(pay=>{
+      if(inRange(pay.date||p.date)){
+        const c=p.case||'أخرى';
+        if(!groups[c])groups[c]={count:0,paid:0,debt:0};
+        groups[c].paid+=parseFloat(pay.amount)||0;
+        rangePayCount++;
+      }
+    });
+    // كيسشيتات بلا سجل دفعات لكن فيها مبلغ مدفوع — تُحسب بتاريخ الكيسشيت
+    if((!p.payments||!p.payments.length)&&inRange(p.date||p.edited)){
+      const paidLegacy=(parseFloat(p.tot)||0)-(parseFloat(p.dbt)||0);
+      if(paidLegacy>0){
+        const c=p.case||'أخرى';
+        groups[c].paid+=paidLegacy;
+      }
+    }
   });
 
   let totalPaid=0,totalDebt=0;
@@ -4876,14 +4941,15 @@ function rRev(){
     </tr>`;
   }).join('');
 
-  const totalPayments=PTS.reduce((s,p)=>s+(p.payments?p.payments.length:0),0);
-  const freeCount=PTS.filter(p=>!p.tot||parseFloat(p.tot)===0).length;
-  const uniqueNames=new Set(PTS.map(p=>p.ph||p.n)).size;
+  const totalPayments=rangePayCount;
+  const freeCount=rangePts.filter(p=>!p.tot||parseFloat(p.tot)===0).length;
+  const uniqueNames=new Set(rangePts.map(p=>p.ph||p.n)).size;
 
   document.getElementById('rev-sum').innerHTML=`
     <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-top:14px;font-size:13px;line-height:2.4;direction:rtl;">
+      <div style="font-weight:700;color:var(--teal);margin-bottom:2px;">📆 الفترة: من ${revFrom||'—'} الى ${revTo||'—'}</div>
       <div>مجمل عدد <b style="color:var(--text);">${uniqueNames}</b> من المرضى تم علاجهم</div>
-      <div>مجمل عدد <b style="color:var(--text);">${PTS.length}</b> من الكيشتيتات تم تسجيلها</div>
+      <div>مجمل عدد <b style="color:var(--text);">${rangePts.length}</b> من الكيشتيتات تم تسجيلها</div>
       <div>مجمل عدد <b style="color:var(--text);">${totalPayments}</b> من الدفعات المالية تم استلامها</div>
       <div>مجمل عدد <b style="color:var(--text);">${freeCount}</b> من الحالات تم استلامها و معالجتها بدون مبالغ مالية (مجانا)</div>
       <hr style="border:none;border-top:1px solid var(--border);margin:6px 0;">
@@ -5427,22 +5493,37 @@ function showInv(){
   const invHTML=`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8">
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    @page{size:80mm auto;margin:2mm;}
-    body{width:80mm;max-width:80mm;font-family:Arial,sans-serif;direction:rtl;color:#000;background:#fff;padding:3mm;font-size:12px;}
+    html,body{margin:0;padding:0;}
+    body{width:80mm;max-width:80mm;box-sizing:border-box;font-family:Arial,sans-serif;direction:rtl;color:#000;background:#fff;padding:3mm 8mm;font-size:12px;overflow:hidden;text-align:center;}
+    .invoice-container{width:100%;box-sizing:border-box;}
+    /* كل سطر في وسط الورقة — العنوان والقيمة معاً */
+    .row,.info-row,.pay-row{display:block;text-align:center;width:100%;margin-bottom:4px;word-wrap:break-word;}
+    .info-row .lbl,.pay-row .lbl{margin-left:5px;font-weight:700;}
+    *{max-width:100%;word-wrap:break-word;color:#000;}
+    @media print{
+      @page{margin:0;size:80mm auto;}
+      body{direction:rtl;width:80mm;box-sizing:border-box;margin:0;padding:3mm 8mm;font-size:12px;text-align:center;}
+    }
+    /* طابعة حرارية أبيض وأسود — كل شيء أسود صافٍ */
+    *{color:#000 !important;border-color:#000 !important;}
+    .title-bar,tr[style*="background:#000"],th{background:#000 !important;color:#fff !important;}
+    .title-bar *,th *{color:#fff !important;}
+
     .logo-row{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:6px;}
     .logo-icon{width:50px;height:50px;}
     .logo-text{font-size:18px;font-weight:900;letter-spacing:1px;line-height:1.2;}
     .logo-text span{display:block;font-size:11px;letter-spacing:3px;}
     .title-bar{background:#000;color:#fff;text-align:center;padding:6px;font-size:15px;font-weight:700;border-radius:3px;margin:6px 0;}
     .date-badge{border:1px solid #999;border-radius:20px;padding:3px 12px;font-size:11px;color:#444;display:inline-block;margin:4px auto 8px;display:block;text-align:center;width:fit-content;margin:4px auto 8px;}
-    .info-row{display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px;}
-    .info-row .lbl{color:#555;font-weight:600;}
+    .info-row{display:block;text-align:center;margin-bottom:5px;font-size:12px;word-wrap:break-word;}
+    .info-row .lbl{color:#000;font-weight:700;margin-left:5px;}
     .tooth-sym{display:inline-block;border-bottom:1.5px solid #000;padding:0 6px 1px;font-weight:700;font-size:13px;}
     .section-title{font-weight:700;font-size:13px;text-align:center;margin:8px 0 4px;}
     .sep{border:none;border-top:1px dashed #bbb;margin:6px 0;}
-    .pay-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;}
+    .pay-row{display:block;text-align:center;font-size:12px;margin-bottom:4px;word-wrap:break-word;}
+    .pay-row span:first-child{font-weight:700;margin-left:5px;}
     .pay-row.total{font-weight:700;font-size:13px;}
-    .pay-row.red{color:#cc0000;font-weight:700;}
+    .pay-row.red{color:#000;font-weight:700;}
     .print-by{text-align:center;font-size:11px;color:#666;margin:6px 0;}
     .print-by span{background:#eee;border-radius:10px;padding:2px 10px;}
     .footer{text-align:center;font-size:11px;color:#333;line-height:2;margin-top:6px;border-top:1px dashed #bbb;padding-top:6px;}
@@ -5709,12 +5790,31 @@ function loadProfileImg(input){
   if(!file)return;
   const reader=new FileReader();
   reader.onload=e=>{
-    const img=document.getElementById('profile-img');
-    img.src=e.target.result;
-    img.style.display='block';
-    document.getElementById('profile-letter').style.display='none';
-    // حفظ الصورة
-    try{localStorage.setItem('profileImg',e.target.result);}catch(e){}
+    // ضغط الصورة الى 256px حتى تصلح للمزامنة السحابية
+    const im=new Image();
+    im.onload=()=>{
+      const c=document.createElement('canvas');
+      const scale=Math.min(1,256/Math.max(im.width,im.height));
+      c.width=Math.round(im.width*scale);c.height=Math.round(im.height*scale);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      const dataURL=c.toDataURL('image/jpeg',0.82);
+      const img=document.getElementById('profile-img');
+      img.src=dataURL;
+      img.style.display='block';
+      document.getElementById('profile-letter').style.display='none';
+      const mob=document.getElementById('mob-profile-img');
+      if(mob){mob.src=dataURL;mob.style.display='block';}
+      // الصورة مرتبطة بالحساب الحالي
+      try{
+        if(currentAccount&&currentAccount.name){
+          localStorage.setItem('profile_img_'+currentAccount.name,dataURL);
+        }
+        localStorage.setItem('profileImg',dataURL);
+      }catch(e){}
+      // مزامنة للسحابة
+      try{fbPushSettings();}catch(e){}
+    };
+    im.src=e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -5966,6 +6066,39 @@ function rSet(){
     </div>`).join('');
 }
 
+// مسح الكيسشيتات والمواعيد فقط — تبقى الحسابات والإعدادات وكل شيء آخر
+async function clearCasesAndAppts(){
+  if(!confirm('⚠️ سيتم حذف كل الكيسشيتات وكل المواعيد نهائياً (محلياً ومن السحابة).\nتبقى الحسابات والإعدادات والملاحظات والصرفيات.\n\nهل أنت متأكد؟'))return;
+  if(!confirm('تأكيد أخير: حذف '+PTS.length+' كيسشيت وكل المواعيد؟ لا يمكن التراجع!'))return;
+
+  // ① حذف من السحابة أولاً — حتى لا تعود البيانات عبر المزامنة
+  if(typeof dbFS!=='undefined' && dbFS && currentUserUid){
+    try{
+      const delAll=async(colRef)=>{
+        while(true){
+          const snap=await colRef.limit(400).get();
+          if(snap.empty)break;
+          const batch=dbFS.batch();
+          snap.docs.forEach(d=>batch.delete(d.ref));
+          await batch.commit();
+        }
+      };
+      await delAll(dbFS.collection('clinics').doc(currentUserUid).collection('patients'));
+      await delAll(dbFS.collection('clinics').doc(currentUserUid).collection('appointments'));
+    }catch(e){
+      if(!confirm('⚠️ تعذر حذف بيانات السحابة: '+e.message+'\nمتابعة الحذف المحلي فقط؟ (قد تعود البيانات من المزامنة)'))return;
+    }
+  }
+
+  // ② الحذف المحلي
+  PTS.splice(0,PTS.length);
+  Object.keys(xA).forEach(k=>delete xA[k]);
+  saveAllToDB();
+  try{rPts(PTS);}catch(e){}
+  try{rCal();}catch(e){}
+  alert('✓ تم مسح كل الكيسشيتات والمواعيد.\nالحسابات والإعدادات والملاحظات والصرفيات كما هي.');
+}
+
 function clearAllData(){
   if(!confirm('⚠️ هل أنت متأكد؟\nسيتم حذف كل البيانات والإعدادات وإعدادات Firebase نهائياً ولا يمكن التراجع!\n\nبعد المسح لن يتصل البرنامج بالسحابة تلقائياً — يبقى فارغاً جاهزاً للتسليم.'))return;
   if(!confirm('تأكيد أخير: سيتم مسح كل شيء بالمتصفح وإعادة التشغيل. متأكد؟'))return;
@@ -6107,6 +6240,64 @@ function fbPushNow(now){
     });
 }
 
+// ===== مزامنة الإعدادات مع السحابة =====
+// (الحسابات وكلمات المرور + الصلاحيات + اسم العيادة في صفحة الدخول + صور الحسابات)
+let _settingsApplying=false,_settingsPushTimer=null;
+function collectSettings(){
+  const imgs={};
+  ACCOUNTS.forEach(a=>{
+    const im=localStorage.getItem('profile_img_'+a.name);
+    if(im&&im.length<300000) imgs[a.name]=im; // حد Firestore للحجم
+  });
+  return {
+    accounts: JSON.parse(localStorage.getItem('clinic_accounts')||'[]'),
+    roles: JSON.parse(localStorage.getItem('clinic_roles_v2')||'null'),
+    clinicName1: localStorage.getItem('clinic_name_line1')||'',
+    clinicName2: localStorage.getItem('clinic_name_line2')||'',
+    profileImgs: imgs,
+    _ts: Date.now()
+  };
+}
+function fbPushSettings(){
+  if(_settingsApplying)return;
+  if(!(typeof dbFS!=='undefined'&&dbFS&&currentUserUid))return;
+  clearTimeout(_settingsPushTimer);
+  _settingsPushTimer=setTimeout(()=>{
+    const s=collectSettings();
+    localStorage.setItem('settings_ts',String(s._ts));
+    dbFS.collection('clinics').doc(currentUserUid).collection('meta').doc('settings')
+      .set(s).catch(e=>console.warn('settings push failed:',e.message));
+  },800);
+}
+function applyRemoteSettings(s){
+  if(!s)return;
+  const localTs=parseInt(localStorage.getItem('settings_ts')||'0');
+  if((s._ts||0)<=localTs)return; // المحلي أحدث
+  _settingsApplying=true;
+  try{
+    if(Array.isArray(s.accounts)&&s.accounts.length){
+      localStorage.setItem('clinic_accounts',JSON.stringify(s.accounts));
+      ACCOUNTS.splice(0,ACCOUNTS.length,...s.accounts.filter(a=>a&&a.name));
+    }
+    if(s.roles){localStorage.setItem('clinic_roles_v2',JSON.stringify(s.roles));ROLES=s.roles;}
+    if(s.clinicName1)localStorage.setItem('clinic_name_line1',s.clinicName1);
+    if(s.clinicName2)localStorage.setItem('clinic_name_line2',s.clinicName2);
+    if(s.profileImgs)Object.entries(s.profileImgs).forEach(([n,im])=>{try{localStorage.setItem('profile_img_'+n,im);}catch(e){}});
+    localStorage.setItem('settings_ts',String(s._ts||Date.now()));
+    try{applyClinicName();}catch(e){}
+    try{renderLoginList();}catch(e){}
+    try{updateAccountUI();}catch(e){}
+    try{if(document.getElementById('accounts-list'))renderAccountsTable();}catch(e){}
+    console.log('⚙️ الإعدادات مُزامنة من السحابة');
+  }finally{setTimeout(()=>{_settingsApplying=false;},100);}
+}
+function listenToSettings(){
+  if(!(dbFS&&currentUserUid))return;
+  dbFS.collection('clinics').doc(currentUserUid).collection('meta').doc('settings')
+    .onSnapshot(doc=>{if(doc.exists)applyRemoteSettings(doc.data());},
+      e=>console.warn('settings listen:',e.message));
+}
+
 function updateSyncStatus(state){
   const dot = document.getElementById('fb-status-dot');
   const lbl = document.getElementById('fb-status-lbl');
@@ -6222,8 +6413,8 @@ let _saving=false;
 
   // ② Web App Manifest
   const manifest = {
-    name: 'EasyClinic',
-    short_name: 'ابو عزّ',
+    name: 'إدارة العيادة',
+    short_name: 'العيادة',
     description: 'نظام إدارة عيادة الأسنان',
     start_url: './',
     display: 'standalone',
@@ -6583,7 +6774,7 @@ function exportData(){
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='easyclinic_backup_'+new Date().toISOString().split('T')[0]+'.json';
+  a.download='clinic_backup_'+new Date().toISOString().split('T')[0]+'.json';
   a.click();
 }
 
@@ -6648,7 +6839,7 @@ async function saveDBToFolder(silent){
       return false;
     }
     const data={PTS,xA,NOTES,EXPS,version:1,date:new Date().toISOString()};
-    const fname='easyclinic_db_'+new Date().toISOString().split('T')[0]+'.json';
+    const fname='clinic_db_'+new Date().toISOString().split('T')[0]+'.json';
     const fileHandle=await handle.getFileHandle(fname,{create:true});
     const writable=await fileHandle.createWritable();
     await writable.write(JSON.stringify(data,null,2));
@@ -6689,13 +6880,53 @@ function importData(){
     reader.onload=ev=>{
       try{
         const data=JSON.parse(ev.target.result);
-        if(data.PTS){PTS.splice(0,PTS.length,...data.PTS);}
-        if(data.xA){Object.assign(xA,data.xA);}
-        if(data.NOTES){NOTES.splice(0,NOTES.length,...data.NOTES);}
-        if(data.EXPS){EXPS.splice(0,EXPS.length,...data.EXPS);}
+        let added=0, skipped=0;
+        // مفتاح تمييز الكيسشيت: الاسم + الهاتف + نوع الحالة + التاريخ + السن
+        const ptKey=p=>[(p.n||'').trim(),(p.ph||'').replace(/\s/g,''),(p.case||'').trim(),(p.date||''),(p.tooth||'')].join('|');
+        if(data.PTS){
+          const existing=new Set(PTS.map(ptKey));
+          const usedIds=new Set(PTS.map(p=>p.id));
+          data.PTS.forEach(p=>{
+            const k=ptKey(p);
+            if(existing.has(k)){skipped++;return;}
+            existing.add(k);
+            let id=p.id;
+            while(!id||usedIds.has(id)){id=Date.now()+Math.floor(Math.random()*1e6);}
+            usedIds.add(id);
+            PTS.push({...p,id:id});
+            added++;
+          });
+        }
+        // دمج المواعيد بدون تكرار (نفس اليوم + الاسم + الوقت)
+        if(data.xA){
+          Object.keys(data.xA).forEach(day=>{
+            if(!xA[day]){xA[day]=data.xA[day];return;}
+            const have=new Set(xA[day].map(a=>(a.name||'')+'|'+(a.time||'')));
+            data.xA[day].forEach(a=>{
+              const k=(a.name||'')+'|'+(a.time||'');
+              if(!have.has(k)){xA[day].push(a);have.add(k);}
+            });
+          });
+        }
+        // دمج الملاحظات بدون تكرار
+        if(data.NOTES){
+          const have=new Set(NOTES.map(n=>(n.text||n.t||'')+'|'+(n.date||n.d||'')));
+          data.NOTES.forEach(n=>{
+            const k=(n.text||n.t||'')+'|'+(n.date||n.d||'');
+            if(!have.has(k)){NOTES.push(n);have.add(k);}
+          });
+        }
+        // دمج الصرفيات بدون تكرار
+        if(data.EXPS){
+          const have=new Set(EXPS.map(x=>(x.desc||'')+'|'+(x.amount||0)+'|'+(x.date||'')));
+          data.EXPS.forEach(x=>{
+            const k=(x.desc||'')+'|'+(x.amount||0)+'|'+(x.date||'');
+            if(!have.has(k)){EXPS.push(x);have.add(k);}
+          });
+        }
         saveAllToDB();
         rPts(PTS);
-        alert('✓ تم استيراد البيانات بنجاح!\nعدد المرضى: '+PTS.length);
+        alert('✓ تم الاستيراد (إضافة الجديد فقط)\n➕ أُضيف: '+added+' كيسشيت\n⏭️ تم تجاوز '+skipped+' مكرر\n📋 الإجمالي الآن: '+PTS.length);
       }catch(err){alert('خطأ في الملف: '+err.message);}
     };
     reader.readAsText(file);

@@ -1832,6 +1832,9 @@ function initFirebase() {
   }
 })(20); // ينتظر حتى 6 ثوانٍ (20 × 300ms)
 
+// معرفات الكيسشيتات المحذوفة محلياً — حتى لا يعيدها المستمع من لقطة قديمة
+const _fbDeletedIds = new Set();
+
 function listenToFirebaseChanges() {
   if (!dbFS || !currentUserUid) return;
   if (fbUnsubscribe) fbUnsubscribe();
@@ -1841,18 +1844,19 @@ function listenToFirebaseChanges() {
     .collection('clinics').doc(currentUserUid)
     .collection('patients')
     .onSnapshot({ includeMetadataChanges: false }, snap => {
-      if (snap.empty) return;
-      const cloud = [];
-      snap.forEach(doc => {
-        // تجاهل البيانات القادمة من الكاش المحلي فقط
-        if (!doc.metadata.fromCache) cloud.push(doc.data());
-      });
-      if (cloud.length === 0) return;
-
       let changed = false;
-      cloud.forEach(cp => {
-        if(!cp || !cp.id) return;
-        const idx = PTS.findIndex(p => String(p.id) === String(cp.id));
+      snap.docChanges().forEach(ch => {
+        if (ch.doc.metadata.fromCache) return; // تجاهل الكاش المحلي
+        const cp = ch.doc.data();
+        const key = String((cp && cp.id) || ch.doc.id);
+        const idx = PTS.findIndex(p => String(p.id) === key);
+        // كيسشيت حُذف من جهاز آخر → احذفه هنا أيضاً
+        if (ch.type === 'removed') {
+          if (idx >= 0) { PTS.splice(idx, 1); changed = true; }
+          return;
+        }
+        if (!cp || !cp.id) return;
+        if (_fbDeletedIds.has(key)) return; // حذفناه محلياً للتو — لا تُعده
         if (idx >= 0) {
           PTS[idx] = cp; // دائماً نقبل بيانات السحابة
         } else {
@@ -5153,7 +5157,7 @@ function setKMode(mode){
     // تفريغ الدفعات وملاحظات العمل
     payments=[];renderPayments();
     workNotes=[];renderWorkNotes();
-  ksPhotos=[];renderKsPhotos();
+  ksPhotos=[];ksPhotoSession++;renderKsPhotos();
 
 
     // ④ إعادة البيانات الشخصية
@@ -5236,7 +5240,7 @@ function oK(id){
       document.getElementById('tog-lbl').textContent=togOn?'حالة مستمرة':'حالة منتهية';
       // تحميل ملاحظات العمل
       workNotes=currentPt.workNotes?[...currentPt.workNotes]:[];
-      ksPhotos=[...(currentPt.photos||[])];  // تحميل الصور الموجودة
+      ksPhotos=[...(currentPt.photos||[])];ksPhotoSession++;  // تحميل الصور الموجودة
       renderKsPhotos();
 
       if(!workNotes.length&&currentPt.note){
@@ -5248,6 +5252,11 @@ function oK(id){
     document.getElementById('k-new-btn').style.background='#555';
   } else {
     currentPt=null;
+    // تصفير كل بيانات الجلسة — حتى لا تتسرب صور/دفعات/ملاحظات الكيسشيت السابق
+    ksPhotos=[];ksPhotoSession++;renderKsPhotos();
+    payments=[];renderPayments();
+    workNotes=[];
+    canalRows=[];
     document.getElementById('k-edit-btn').style.background='#555';
     document.getElementById('k-new-btn').style.background='#3a3a3a';
   }
@@ -5315,6 +5324,7 @@ function compressImage(file,cb,quality){
 
 // صور الكيشيت
 let ksPhotos = []; // صور الجلسة الحالية فقط
+let ksPhotoSession = 0; // رمز الجلسة — يمنع تسرب الصور بين الكيسشيتات
 
 function handlePhotoDrop(e){
   e.preventDefault();
@@ -5332,9 +5342,11 @@ function addKsPhotos(input){
 
 function processPhotoFiles(files){
   const desc = (document.getElementById('ks-photo-desc')?.value||'').trim();
+  const mySession = ksPhotoSession; // اربط هذا الرفع بالكيسشيت المفتوح الآن
   let done=0;
   files.forEach(file=>{
     const process = b64=>{
+      if(mySession !== ksPhotoSession) return; // تم فتح كيسشيت آخر — تجاهل
       ksPhotos.push({
         src:b64,
         date:new Date().toISOString().split('T')[0],
@@ -5867,6 +5879,13 @@ function delCurrentPt(){
   if(idx === -1){
     alert('خطأ: لم يتم العثور على الكيشتيت (id=' + ptId + ')\nعدد السجلات: ' + PTS.length);
     return;
+  }
+  // حذف من السحابة أولاً حتى لا يعود من المزامنة على أي جهاز
+  _fbDeletedIds.add(String(ptId));
+  if (typeof dbFS !== 'undefined' && dbFS && currentUserUid) {
+    dbFS.collection('clinics').doc(currentUserUid)
+      .collection('patients').doc(String(ptId)).delete()
+      .catch(e => console.warn('حذف السحابة فشل:', e.message));
   }
   PTS.splice(idx, 1);
   currentPt = null;

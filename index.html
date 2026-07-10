@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="ابو عزّ">
 <meta name="theme-color" content="#2ab5a0">
 <meta name="description" content="نظام إدارة عيادة الأسنان">
-<title>إدارة العيادة</title>
+<title>ابو عزّ — د. مهند مديد</title>
 <link rel="manifest" id="pwa-manifest">
 <link rel="apple-touch-icon" id="pwa-icon-link">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -229,6 +229,7 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
 .tog::after{content:'';position:absolute;right:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:right .2s;}
 .tog.off::after{right:31px;}
 .tog-lbl{font-size:15px;font-weight:700;color:var(--teal);}
+@keyframes ksspin{to{transform:rotate(360deg);}}
 .md-ft{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;}
 .teeth-w{margin-bottom:10px;}
 .teeth-r{display:flex;gap:2px;justify-content:center;margin-bottom:2px;}
@@ -865,6 +866,20 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
       </div>
 
 
+      <!-- آخر التحركات -->
+      <div onclick="showSetSection('acts')" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+        <i class="ti ti-chevron-left" style="color:var(--muted);font-size:16px;"></i>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div>
+            <div style="font-size:14px;font-weight:700;text-align:right;">آخر التحركات</div>
+            <div style="font-size:11px;color:var(--muted);text-align:right;">معاينة أو تراجع عن آخر الإضافات والتعديلات والحذف</div>
+          </div>
+          <div style="width:40px;height:40px;background:#9b59b6;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+            <i class="ti ti-history" style="color:#fff;font-size:18px;"></i>
+          </div>
+        </div>
+      </div>
+
       <!-- الوصولات -->
       <div onclick="showSetSection('print')" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
         <i class="ti ti-chevron-left" style="color:var(--muted);font-size:16px;"></i>
@@ -990,8 +1005,7 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
             <button onclick="saveFirebaseConfig()" style="flex:1;background:#f5820d;border:none;border-radius:8px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">💾 حفظ</button>
             <button onclick="clearFirebaseConfig()" style="background:var(--red);border:none;border-radius:8px;padding:10px 16px;color:#fff;font-size:13px;cursor:pointer;font-family:inherit;">✕ مسح</button>
           </div>
-          <button onclick="restoreDefaultFirebase()" style="width:100%;margin-top:8px;background:var(--teal);border:none;border-radius:8px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">↻ استعادة الاتصال الافتراضي</button>
-
+          <button onclick="restoreDefaultFirebase()" style="width:100%;margin-top:8px;background:var(--teal);border:none;border-radius:8px;padding:10px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">↻ استعادة اتصال العيادة الافتراضي</button>
         </div>
       </details>
     </div>
@@ -1290,6 +1304,14 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
   </div>
 
   <!-- قسم: حول البرنامج -->
+  <!-- قسم: آخر التحركات -->
+  <div id="set-acts" class="content" style="display:none;">
+    <div style="max-width:640px;margin:0 auto;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;text-align:center;">آخر 40 حركة (كيسشيتات، مواعيد، صرفيات) — التراجع يعيد الحالة السابقة محلياً وعلى السحابة</div>
+      <div id="act-log-list"></div>
+    </div>
+  </div>
+
   <div id="set-about" class="content" style="display:none;">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;text-align:right;">
       <div style="text-align:center;margin-bottom:20px;">
@@ -1301,12 +1323,12 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
         <div style="font-size:13px;font-weight:700;margin-bottom:10px;">✏️ تخصيص اسم العيادة في شاشة الدخول</div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
           <span style="font-size:12px;color:var(--muted);min-width:60px;">السطر الأول</span>
-          <input id="clinic-name-line1" type="text" placeholder="MY DENTAL"
+          <input id="clinic-name-line1" type="text" placeholder="DR. MUHANAD"
             style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;direction:ltr;text-align:left;outline:none;">
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
           <span style="font-size:12px;color:var(--muted);min-width:60px;">السطر الثاني</span>
-          <input id="clinic-name-line2" type="text" placeholder="CLINIC"
+          <input id="clinic-name-line2" type="text" placeholder="MADEED"
             style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;direction:ltr;text-align:left;outline:none;">
         </div>
         <button onclick="saveClinicName()" style="width:100%;background:var(--teal);border:none;border-radius:8px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">💾 حفظ الاسم</button>
@@ -1317,7 +1339,7 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
         <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;"><span style="color:var(--muted);">الإصدار</span><b>10.0</b></div>
         <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;"><span style="color:var(--muted);">قاعدة البيانات</span><b>IndexedDB</b></div>
         <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;"><span style="color:var(--muted);">التقنية</span><b>HTML / CSS / JS</b></div>
-        <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;"><span style="color:var(--muted);">الهاتف</span><b>رقم الهاتف هنا</b></div>
+        <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0;"><span style="color:var(--muted);">الهاتف</span><b>0772 274 4448</b></div>
         <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--muted);">إنستغرام</span><b>dr.muhand_madeed</b></div>
       </div>
     </div>
@@ -1633,6 +1655,10 @@ html,body{height:100%;font-family:Arial,sans-serif;background:var(--bg);color:va
         <input type="file" id="ks-photo-input" accept="image/*" multiple style="display:none;" onchange="addKsPhotos(this)">
         <!-- عرض الصور -->
         <div id="ks-photos-wrap"></div>
+        <div id="ks-photo-loading" style="display:none;background:var(--card2);border:1px dashed var(--teal);border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:var(--teal);align-items:center;gap:8px;">
+          <span class="ks-spin" style="width:14px;height:14px;border:2px solid var(--teal);border-top-color:transparent;border-radius:50%;display:inline-block;animation:ksspin .7s linear infinite;flex-shrink:0;"></span>
+          <span id="ks-photo-loading-txt">جاري رفع الصورة...</span>
+        </div>
 
       </div>
       <button class="btn bd" style="width:100%;" onclick="showInv()"><i class="ti ti-printer"></i> طباعة الكيشتيت</button>
@@ -1766,15 +1792,14 @@ let currentUserUid = 'default_doctor';
 let fbUnsubscribe = null;
 
 // الـ Config الافتراضي — يُستبدل بما في localStorage إذا وُجد
-// إعدادات Firebase الافتراضية لهذه النسخة
 const DEFAULT_FB_CONFIG = {
-  apiKey: "AIzaSyDGync8O9yw6p0UmHLrqRvg2mJnkNto65E",
-  authDomain: "yahyaclinic1.firebaseapp.com",
-  projectId: "yahyaclinic1",
-  storageBucket: "yahyaclinic1.firebasestorage.app",
-  messagingSenderId: "58876676218",
-  appId: "1:58876676218:web:8626947eaea41428fe13c3",
-  measurementId: "G-X8VTR6HYEL"
+  apiKey: "AIzaSyBa95mrlbvXiYCKh6Zv3CeB5M1NTqgv3Sc",
+  authDomain: "yahya-clinic.firebaseapp.com",
+  projectId: "yahya-clinic",
+  storageBucket: "yahya-clinic.firebasestorage.app",
+  messagingSenderId: "90238349365",
+  appId: "1:90238349365:web:12a7bb5f0bb8c8c6c0417c",
+  measurementId: "G-D9EDYKLK5Y"
 };
 
 // initFirebase تُستدعى بعد اكتمال تحميل الصفحة وكل السكريبتات
@@ -1862,6 +1887,7 @@ function listenToFirebaseChanges() {
         } else {
           PTS.push(cp);
         }
+        try{_fbLastHash.set('p:'+cp.id, _docHash(cp));}catch(e){}
         changed = true;
       });
 
@@ -1875,7 +1901,7 @@ function listenToFirebaseChanges() {
           if(updated && typeof openKs === 'function') openKs(updated);
         }
       }
-      console.log('🔄 Firebase patients synced:', cloud.length);
+      if (changed) console.log('🔄 Firebase patients synced');
     }, err => console.error('FB listen error:', err));
 
     // استماع للمواعيد — يُحدَّث الـ UI فور وصول أي تغيير
@@ -1889,6 +1915,7 @@ function listenToFirebaseChanges() {
         if(data && data.appts){
           const key = doc.id;
           xA[key] = data.appts; // قبول كل بيانات السحابة مباشرة
+          try{_fbLastHash.set('a:'+key, _docHash(data.appts));}catch(e){}
           changed = true;
         }
       });
@@ -1901,15 +1928,9 @@ function listenToFirebaseChanges() {
 
 async function syncToFirebase() {
   if (!dbFS) { alert('Firebase غير متصل'); return; }
-  const col = dbFS.collection('clinics').doc(currentUserUid).collection('patients');
-  const batch = dbFS.batch();
-  PTS.forEach(p => {
-    batch.set(col.doc(String(p.id)), p);
-  });
   try {
-    await batch.commit();
-    localStorage.setItem('fb_last_sync', new Date().toLocaleString('ar-IQ'));
-    alert('✓ تمت المزامنة بنجاح — ' + PTS.length + ' سجل');
+    await fbPushNow(0, true); // رفع كامل قسري
+    alert('✓ تمت المزامنة الكاملة — ' + PTS.length + ' سجل');
   } catch(e) {
     alert('خطأ في المزامنة: ' + e.message);
   }
@@ -1955,7 +1976,7 @@ function clearFirebaseConfig() {
 }
 
 function restoreDefaultFirebase() {
-  if (!confirm('استعادة الاتصال الافتراضي (yahyaclinic1)؟\nسيتم تحميل البيانات من السحابة.')) return;
+  if (!confirm('استعادة اتصال العيادة الافتراضي (yahya-clinic)؟\nسيتم تحميل بيانات العيادة من السحابة.')) return;
   localStorage.setItem('easyclinic_fb_config', JSON.stringify(DEFAULT_FB_CONFIG));
   localStorage.removeItem('easyclinic_no_default_fb');
   location.reload();
@@ -2081,7 +2102,23 @@ async function loadFromFirebase() {
 
 // ============================================================
 // ===== DATA =====
-const PTS=[];
+const PTS=[
+  {id:1,n:'ريان محمود ياسين',ph:'07739663601',g:'أنثى',st:'منتهية',dbt:150,case:'حشوة',tooth:67,date:'2026-06-11',note:'6 deep 7 endo not by me',edited:'2026-06-11 21:45:11'},
+  {id:2,n:'ضمياء هاني يونس',ph:'07510476128',g:'أنثى',st:'مستمرة',dbt:350,case:'زراعة جراحية',tooth:4,date:'2026-04-01',note:'4@10 cyber med',edited:'2026-06-11 19:08:28'},
+  {id:3,n:'رشا نذير جاسم',ph:'07718375227',g:'أنثى',st:'مستمرة',dbt:200,case:'حشوة جذر',tooth:5,date:'2026-06-11',note:'obtu',edited:'2026-06-11 19:04:57'},
+  {id:4,n:'احمد عمار عبد الجبار',ph:'07735753050',g:'ذكر',st:'مستمرة',dbt:0,case:'حشوة',tooth:6,date:'2026-06-11',note:'',edited:'2026-06-11 17:08:55'},
+  {id:5,n:'نيا محمد غانم',ph:'07708256632',g:'أنثى',st:'مستمرة',dbt:20,case:'حشوة جذر',tooth:5,date:'2026-05-02',note:'obu',edited:'2026-06-11 15:50:17'},
+  {id:6,n:'نيا محمد غانم',ph:'07708256632',g:'أنثى',st:'',dbt:0,case:'حشوة',tooth:6,date:'2026-06-11',note:'',edited:'2026-06-11 15:49:58'},
+  {id:7,n:'نيا محمد غانم',ph:'07708256632',g:'أنثى',st:'مستمرة',dbt:140,case:'حشوة جذر',tooth:7,date:'2026-06-11',note:'meta vital',edited:'2026-06-11 15:49:16'},
+  {id:8,n:'مصطفى مخلص احمد',ph:'07506438764',g:'ذكر',st:'مستمرة',dbt:200,case:'حشوة جذر',tooth:5,date:'2026-06-10',note:'obtu',edited:'2026-06-10 21:56:44'},
+  {id:9,n:'مصطفى مخلص احمد',ph:'07506438764',g:'ذكر',st:'',dbt:0,case:'حشوة',tooth:6,date:'2026-06-10',note:'',edited:'2026-06-10 21:20:00'},
+  {id:10,n:'شيماء عبد الكريم صالح',ph:'07774084099',g:'أنثى',st:'مستمرة',dbt:150,case:'حشوة جذر',tooth:4,date:'2026-06-09',note:'obtu',edited:'2026-06-09 18:30:00'},
+  {id:11,n:'مصعب سعيد مجيد',ph:'07722181120',g:'ذكر',st:'مستمرة',dbt:120,case:'حشوة',tooth:3,date:'2026-06-08',note:'',edited:'2026-06-08 14:20:10'},
+  {id:12,n:'ايمن سالم محمد',ph:'07729683713',g:'ذكر',st:'منتهية',dbt:0,case:'فحص',tooth:0,date:'2026-06-07',note:'',edited:'2026-06-07 10:05:33'},
+  {id:13,n:'ثامر حسين فندي',ph:'07502064229',g:'ذكر',st:'مستمرة',dbt:115,case:'حشوة جذر',tooth:6,date:'2026-06-06',note:'',edited:'2026-06-06 16:44:22'},
+  {id:14,n:'سارة محمود الجنابي',ph:'07712345678',g:'أنثى',st:'مستمرة',dbt:0,case:'تقويم الاسنان',tooth:0,date:'2026-06-05',note:'',edited:'2026-06-05 11:00:00'},
+  {id:15,n:'حسن طارق البياتي',ph:'07723456789',g:'ذكر',st:'مستمرة',dbt:250,case:'زراعة جراحية',tooth:5,date:'2026-06-04',note:'',edited:'2026-06-04 09:15:00'},
+];
 
 const MONTHS=['يناير','فبراير','مارس','ابريل','مايو','حزيران','تموز','آب','ايلول','تشرين الأول','تشرين الثاني','كانون الأول'];
 const DAYS=['الاحد','الاثنين','الثلاثاء','الاربعاء','الخميس','الجمعة','السبت'];
@@ -2256,10 +2293,27 @@ let selectMode=false; // وضع التحديد
 let xA={};
 let curDay='',caKey='',caIdx=-1;
 
-const SA={};
+const SA={
+  '2026-06-21':[{n:'ابه رياض فتحي',f:'02:00 pm',t:'02:00 pm',tp:'حشوة جذر'},{n:'عمار بدران محمود',f:'03:30 pm',t:'03:30 pm',tp:'امراض اللثة واصل 10'},{n:'ازهار خليل اسماعيل',f:'06:30 pm',t:'06:30 pm',tp:'واصل 5'}],
+  '2026-06-22':[{n:'تنظيف العيادة',f:'10:00 am',t:'10:00 am',tp:''},{n:'نور محمد علي',f:'03:30 pm',t:'03:30 pm',tp:'حشوة جذر'},{n:'محمود زكي كرم',f:'05:00 pm',t:'05:00 pm',tp:'حشوة جذر'},{n:'ميسون حسن صالح',f:'06:30 pm',t:'06:30 pm',tp:''}],
+  '2026-06-23':[{n:'كاظم اسود خلف',f:'05:00 pm',t:'05:00 pm',tp:'حشوة جذر'},{n:'سحر محمد علي',f:'06:30 pm',t:'06:30 pm',tp:'واصل 10'}],
+  '2026-06-24':[{n:'غفران ناصر عبد المنعم',f:'06:30 pm',t:'06:30 pm',tp:'تقويم الاسنان'},{n:'الاء علي زينو',f:'06:30 pm',t:'06:30 pm',tp:'تقويم الاسنان'},{n:'لقمان عبد الحكيم عزيز',f:'06:30 pm',t:'06:30 pm',tp:'تقويم'},{n:'مياده مويد متعب',f:'06:30 pm',t:'06:30 pm',tp:'تقويم'},{n:'مصعب سعيد مجيد',f:'06:30 pm',t:'06:30 pm',tp:'حشوة جذر'}],
+  '2026-06-25':[{n:'ضحى طارق علي',f:'03:00 pm',t:'03:00 pm',tp:'حشوة جذر'},{n:'ميعاد شاكر محمد',f:'05:00 pm',t:'05:00 pm',tp:''},{n:'عبد القادر احمد محمد',f:'06:30 pm',t:'06:30 pm',tp:''}],
+  '2026-06-27':[{n:'ايمن سالم محمد',f:'06:00 am',t:'06:00 am',tp:'اضافي'},{n:'علي حسين الداوبي',f:'02:00 pm',t:'02:00 pm',tp:''},{n:'محمد عبد الكريم عبد الواحد',f:'05:00 pm',t:'05:00 pm',tp:'حشوة جذر'}],
+};
 
-const NOTES=[];
-const RXS=[];
+const NOTES=[
+  {title:'يوسف',body:'قاسم محمد يطلب 5',by:'Admin',date:'2026-01-24 19:08:04'},
+  {title:'',body:'النتباتات  سقي\nالفلتر مال ماي\nالسمك الفلتر\nالجبر مايل\nاليدة مال جامات',by:'Admin',date:'2026-01-24 19:08:00'},
+  {title:'new wee need',body:'برش الاخضر وازرق والاسود\nتويستيد بولشينك بير',by:'Admin',date:'2025-12-16 17:53:53'},
+  {title:'سند',body:'',by:'Admin',date:'2025-09-08 20:52:08'},
+  {title:'لقطوسات التقويم',body:'',by:'Admin',date:'2025-05-28 14:01:35'},
+  {title:'عبدالله',body:'',by:'Admin',date:''},
+];
+const RXS=[
+  {pt:'علي محمد الجبوري',dt:'2026-06-10',rx:'أموكسيسيلين 500mg - 3 مرات يومياً لمدة 5 أيام\nإيبوبروفين 400mg - عند الألم'},
+  {pt:'فاطمة أحمد الحسن',dt:'2026-06-08',rx:'ميترونيدازول 500mg - مرتين يومياً\nباراسيتامول 500mg - عند الحاجة'},
+];
 
 let searchType='اسم المريض';
 
@@ -2457,7 +2511,7 @@ function openCalWA(dateKey){
     'علما انها من ضمن المبلغ عند العمل',
     'المكالمة و الرسالة هي للتذكير فقط',
     'في حال تاجيل الموعيد يكون قبلها بيوم على الاقل',
-    'عيادة الأسنان'
+    'عيادة الدكتور مهند مديد'
   ].join('\n');
 
   const modal=document.createElement('div');
@@ -2720,7 +2774,7 @@ ${casesHTML}
 </div>
 <div class="footer">
   📷 dr.muhand_madeed<br>
-  رقم الهاتف هنا<br>
+  0772 274 4448 — 0751 159 3998<br>
   سوق سومر - الاستدارة الثانية - قيصرية عرائس مارسين - مجاور صيدلية رغس
 </div>
 </body></html>`;
@@ -3178,7 +3232,11 @@ function clearCalSearch(){
 function pW(){wkOff--;rCal();}
 function nW(){wkOff++;rCal();}
 
-function dAp(k,i){if(xA[k])xA[k].splice(i,1);rCal();}
+function dAp(k,i){
+  if(!xA[k]||!xA[k][i])return;
+  logAction('appt_del','حذف موعد: '+(xA[k][i].n||'')+' ('+k+')',{day:k,record:{...xA[k][i]}});
+  xA[k].splice(i,1);rCal();saveAllToDB();
+}
 
 const STATUS_ORDER=['حجز','مؤجل','لم يحضر','تم'];
 function cycleStatus(k,i){
@@ -3837,8 +3895,8 @@ function saveClinicName(){
 }
 
 function applyClinicName(){
-  const l1 = localStorage.getItem('clinic_name_line1') || 'MY DENTAL';
-  const l2 = localStorage.getItem('clinic_name_line2') || 'CLINIC';
+  const l1 = localStorage.getItem('clinic_name_line1') || 'DR. MUHANAD';
+  const l2 = localStorage.getItem('clinic_name_line2') || 'MADEED';
   const t = document.getElementById('login-clinic-title');
   const s = document.getElementById('login-clinic-sub-text');
   if(t) t.textContent = l1;
@@ -4299,7 +4357,7 @@ function saveApptDetail(){
 }
 function saveNA(){
   const k=curDay;if(!xA[k])xA[k]=[];
-  xA[k].push({
+  const _na={
     n:document.getElementById('na-n').value||'مريض',
     ph:document.getElementById('na-ph').value||'',
     f:document.getElementById('na-f').value,
@@ -4308,7 +4366,9 @@ function saveNA(){
     nt:document.getElementById('na-nt').value,
     status:'حجز',
     acc:currentAccount?.name||'Admin'
-  });
+  };
+  xA[k].push(_na);
+  logAction('appt_add','إضافة موعد: '+_na.n+' ('+k+' '+_na.t+')',{day:k,match:{n:_na.n,t:_na.t},record:{..._na}});
   cx('m-na');rCal();saveAllToDB();
 }
 function adjT(m){
@@ -4775,7 +4835,19 @@ function parsePDFPatient(text,filename){
   };
 }
 
-let EXPS=[];
+let EXPS=[
+  {desc:'مواد طبية ومستلزمات',amt:50000,date:'2026-06-10',cat:'مستلزمات طبية'},
+  {desc:'فاتورة كهرباء',amt:25000,date:'2026-06-08',cat:'فواتير'},
+  {desc:'راتب الموظف',amt:200000,date:'2026-06-05',cat:'رواتب'},
+  {desc:'صيانة كرسي الاسنان',amt:35000,date:'2026-06-01',cat:'صيانة'},
+];
+
+function delExpRow(i){
+  const x=EXPS[i];if(!x)return;
+  if(!confirm('حذف الصرفية: '+x.desc+'؟'))return;
+  logAction('exp_del','حذف صرفية: '+x.desc+' ('+x.amt+')',{record:{...x}});
+  EXPS.splice(i,1);rExp();saveAllToDB();
+}
 
 function addExp(){
   document.getElementById('exp-date').value=new Date().toISOString().split('T')[0];
@@ -4787,12 +4859,14 @@ function addExp(){
 function saveExp(){
   const desc=document.getElementById('exp-desc').value;
   if(!desc)return;
-  EXPS.unshift({
+  const _exp={
     desc,
     amt:parseFloat(document.getElementById('exp-amt').value)||0,
     date:document.getElementById('exp-date').value,
     cat:document.getElementById('exp-cat').value
-  });
+  };
+  EXPS.unshift(_exp);
+  logAction('exp_add','إضافة صرفية: '+desc+' ('+_exp.amt+')',{record:{..._exp}});
   cx('m-exp');
   rExp();
   saveAllToDB();
@@ -4816,7 +4890,7 @@ function rExp(){
           <td>${e.desc}</td>
           <td class="tr2">${e.amt.toLocaleString()} IQD</td>
           <td><span class="tbd">${e.cat}</span></td>
-          <td><button onclick="EXPS.splice(${EXPS.indexOf(e)},1);rExp()" style="background:var(--red);border:none;border-radius:4px;padding:2px 8px;color:#fff;cursor:pointer;font-size:12px;">حذف</button></td>
+          <td><button onclick="delExpRow(${EXPS.indexOf(e)})" style="background:var(--red);border:none;border-radius:4px;padding:2px 8px;color:#fff;cursor:pointer;font-size:12px;">حذف</button></td>
         </tr>`).join('')}
       </tbody>
     </table>
@@ -5340,13 +5414,33 @@ function addKsPhotos(input){
   input.value='';
 }
 
+let _ksLoadStart=0,_ksHideTimer=null;
+function ksPhotoLoading(show,txt){
+  const el=document.getElementById('ks-photo-loading');
+  if(!el)return;
+  const t=document.getElementById('ks-photo-loading-txt');
+  if(show){
+    clearTimeout(_ksHideTimer);
+    if(el.style.display!=='flex')_ksLoadStart=Date.now();
+    el.style.display='flex';
+    if(t&&txt)t.textContent=txt;
+  }else{
+    // ابقِ المؤشر ظاهراً ثانية على الأقل حتى يُرى
+    const remain=Math.max(0,1000-(Date.now()-_ksLoadStart));
+    if(t)t.textContent='✓ تم الرفع';
+    clearTimeout(_ksHideTimer);
+    _ksHideTimer=setTimeout(()=>{el.style.display='none';},remain+400);
+  }
+}
 function processPhotoFiles(files){
   const desc = (document.getElementById('ks-photo-desc')?.value||'').trim();
   const mySession = ksPhotoSession; // اربط هذا الرفع بالكيسشيت المفتوح الآن
   let done=0;
+  // مؤشر رفع صغير تحت الصور
+  ksPhotoLoading(true, files.length>1?('جاري رفع الصور... (0/'+files.length+')'):'جاري رفع الصورة...');
   files.forEach(file=>{
     const process = b64=>{
-      if(mySession !== ksPhotoSession) return; // تم فتح كيسشيت آخر — تجاهل
+      if(mySession !== ksPhotoSession){ ksPhotoLoading(false); return; } // تم فتح كيسشيت آخر — تجاهل
       ksPhotos.push({
         src:b64,
         date:new Date().toISOString().split('T')[0],
@@ -5354,7 +5448,10 @@ function processPhotoFiles(files){
         rot:0
       });
       done++;
-      if(done===files.length){
+      if(done<files.length){
+        ksPhotoLoading(true,'جاري رفع الصور... ('+done+'/'+files.length+')');
+      } else {
+        ksPhotoLoading(false);
         if(document.getElementById('ks-photo-desc')) document.getElementById('ks-photo-desc').value='';
         renderKsPhotos();
       }
@@ -5493,9 +5590,14 @@ function saveK(){
 
   if(currentPt){
     const idx=PTS.findIndex(p=>p.id===currentPt.id);
-    if(idx>=0) PTS[idx]={...PTS[idx],...data};
+    if(idx>=0){
+      logAction('ks_edit','تعديل كيسشيت: '+(data.n||''),{prev:JSON.parse(JSON.stringify(PTS[idx]))});
+      PTS[idx]={...PTS[idx],...data};
+    }
   } else {
-    PTS.unshift({id:Date.now(),...data});
+    const _newId=Date.now();
+    logAction('ks_add','إضافة كيسشيت: '+(data.n||''),{id:_newId});
+    PTS.unshift({id:_newId,...data});
   }
   cxForce('m-k');
   rPts(PTS);
@@ -5781,7 +5883,7 @@ function printRxModal(){
       <line x1="40" y1="58" x2="40" y2="38" stroke="#2dc9b2" stroke-width="1.5"/>
       <line x1="30" y1="38" x2="50" y2="38" stroke="#2dc9b2" stroke-width="1.5"/>
     </svg>
-    <div><div class="dr-name">اسم الطبيب</div><div class="dr-sub">بكالوريوس طب وجراحة الفم والاسنان</div><div class="dr-sub">B.D.S</div></div>
+    <div><div class="dr-name">الدكتور مهند مديد جاسم</div><div class="dr-sub">بكالوريوس طب وجراحة الفم والاسنان</div><div class="dr-sub">B.D.S</div></div>
   </div>
   <div class="field-row"><label>التاريخ:</label><div class="field-val">${date}</div></div>
   <div class="field-row"><label>الاسم:</label><div class="field-val">${name}</div></div>
@@ -5796,7 +5898,7 @@ function printRxModal(){
   <div class="sig-row">توقيع الطبيب: <div class="sig-line"></div></div>
   <div class="footer">
     <div class="footer-text">
-      <div class="phone">رقم الهاتف هنا</div>
+      <div class="phone">0772 274 4448 - 0751 159 3998</div>
       <div class="addr">سوق سومر - الاستدارة الثانية - قيصرية عرائس مارسين<br>مجاور صيدلية رغس</div>
     </div>
     <div class="qr-box">
@@ -5880,6 +5982,7 @@ function delCurrentPt(){
     alert('خطأ: لم يتم العثور على الكيشتيت (id=' + ptId + ')\nعدد السجلات: ' + PTS.length);
     return;
   }
+  logAction('ks_del','حذف كيسشيت: '+ptName,{record:JSON.parse(JSON.stringify(PTS[idx]))});
   // حذف من السحابة أولاً حتى لا يعود من المزامنة على أي جهاز
   _fbDeletedIds.add(String(ptId));
   if (typeof dbFS !== 'undefined' && dbFS && currentUserUid) {
@@ -5920,7 +6023,7 @@ function showSetMenu(){
   if(title)title.textContent='الإعدادات';
 }
 
-const setTitles={firebase:'Firebase',data:'إدارة البيانات',print:'الوصولات',rx:'الوصفة',ks:'الكيشيتات',stats:'إحصائيات',storage:'إحصائيات التخزين',about:'حول البرنامج',accounts:'إدارة الحسابات',roles:'صلاحيات الريسيبشن والطبيب'};
+const setTitles={acts:'آخر التحركات',firebase:'Firebase',data:'إدارة البيانات',print:'الوصولات',rx:'الوصفة',ks:'الكيشيتات',stats:'إحصائيات',storage:'إحصائيات التخزين',about:'حول البرنامج',accounts:'إدارة الحسابات',roles:'صلاحيات الريسيبشن والطبيب'};
 function showSetSection(sec){
   showSetMenu();
   const menu=document.getElementById('set-menu');
@@ -5938,6 +6041,7 @@ function showSetSection(sec){
   if(sec==='ks')setTimeout(initKsSettings,50);
   if(sec==='storage')setTimeout(renderStorageStats,100);
   if(sec==='firebase')setTimeout(initFirebaseUI,50);
+  if(sec==='acts')setTimeout(renderActLog,30);
   if(sec==='about')setTimeout(applyClinicName,50);
   if(sec==='accounts'){
     setTimeout(()=>{
@@ -6252,30 +6356,58 @@ function saveAllToDB(){
   }
 }
 
-function fbPushNow(now){
-  const ts = now || Date.now();
-  const col = dbFS.collection('clinics').doc(currentUserUid).collection('patients');
-  const batch = dbFS.batch();
-  PTS.forEach(p => {
-    p._ts = ts;
-    batch.set(col.doc(String(p.id)), p);
-  });
-  const apptCol = dbFS.collection('clinics').doc(currentUserUid).collection('appointments');
-  Object.entries(xA).forEach(([k,v]) => {
-    if(k.startsWith('_ts_')) return;
-    batch.set(apptCol.doc(k), {appts:v, _ts:ts});
-  });
-  batch.commit()
-    .then(() => {
-      localStorage.removeItem('fb_pending_sync');
-      localStorage.setItem('fb_last_sync', new Date().toLocaleString('ar-IQ'));
-      updateSyncStatus('ok');
-    })
-    .catch(e => {
-      localStorage.setItem('fb_pending_sync','1');
-      updateSyncStatus('error');
-      console.warn('FB write failed:', e.message);
-    });
+// ===== الرفع التفاضلي — يرفع المستندات المتغيّرة فقط (توفير حصة Firebase) =====
+const _fbLastHash = new Map(); // بصمة آخر نسخة مرفوعة لكل مستند
+function _docHash(obj){
+  // بصمة سريعة تتجاهل _ts حتى لا تتغير مع كل دفعة
+  const s = JSON.stringify(obj, (k,v)=>k==='_ts'?undefined:v);
+  let h = 5381;
+  for(let i=0;i<s.length;i+=17){ h = ((h<<5)+h+s.charCodeAt(i))|0; }
+  return s.length+':'+h;
+}
+async function fbPushNow(now, force){
+  const ts = (typeof now==='number'&&now) || Date.now();
+  try{
+    const commits=[];
+    let batch=dbFS.batch(), ops=0, bytes=0;
+    const flush=()=>{ if(ops){ commits.push(batch.commit()); batch=dbFS.batch(); ops=0; bytes=0; } };
+    const pushed=[]; // [مفتاح البصمة, البصمة] — تُثبَّت بعد نجاح الرفع
+    const add=(ref,data,hkey,h)=>{
+      const sz=JSON.stringify(data).length;
+      if(ops>=400 || (bytes+sz)>8000000) flush();
+      batch.set(ref,data); ops++; bytes+=sz;
+      pushed.push([hkey,h]);
+    };
+    const col = dbFS.collection('clinics').doc(currentUserUid).collection('patients');
+    for(const p of PTS){
+      const hkey='p:'+p.id;
+      const h=_docHash(p);
+      if(!force && _fbLastHash.get(hkey)===h) continue; // لم يتغيّر — لا ترفعه
+      p._ts = ts;
+      add(col.doc(String(p.id)), p, hkey, h);
+    }
+    const apptCol = dbFS.collection('clinics').doc(currentUserUid).collection('appointments');
+    for(const [k,v] of Object.entries(xA)){
+      if(k.startsWith('_ts_')) continue;
+      const hkey='a:'+k;
+      const h=_docHash(v);
+      if(!force && _fbLastHash.get(hkey)===h) continue;
+      add(apptCol.doc(k), {appts:v, _ts:ts}, hkey, h);
+    }
+    flush();
+    if(commits.length){
+      await Promise.all(commits);
+      pushed.forEach(([k,h])=>_fbLastHash.set(k,h));
+      console.log('⤴️ رفع تفاضلي:', pushed.length, 'مستند متغيّر');
+    }
+    localStorage.removeItem('fb_pending_sync');
+    localStorage.setItem('fb_last_sync', new Date().toLocaleString('ar-IQ'));
+    updateSyncStatus('ok');
+  }catch(e){
+    localStorage.setItem('fb_pending_sync','1');
+    updateSyncStatus('error');
+    console.warn('FB write failed:', e.message);
+  }
 }
 
 // ===== مزامنة الإعدادات مع السحابة =====
@@ -6369,6 +6501,108 @@ function listenToSettings(){
         else if(id.startsWith('img_'))applyRemoteImage(id.slice(4),ch.doc.data());
       });
     }, e=>console.warn('settings listen:',e.message));
+}
+
+
+// ===== سجل آخر التحركات (معاينة + تراجع) =====
+function getActLog(){try{return JSON.parse(localStorage.getItem('act_log')||'[]');}catch(e){return [];}}
+function setActLog(l){
+  try{localStorage.setItem('act_log',JSON.stringify(l.slice(0,40)));}
+  catch(e){try{localStorage.setItem('act_log',JSON.stringify(l.slice(0,10)));}catch(_){}}
+}
+function logAction(type,desc,undo){
+  try{
+    // تخفيف الحجم: أسقط الصور الكبيرة من اللقطات
+    const strip=o=>{if(o&&o.photos&&JSON.stringify(o.photos).length>150000){o={...o,photos:[],_photosDropped:true};}return o;};
+    if(undo){if(undo.record)undo.record=strip(undo.record);if(undo.prev)undo.prev=strip(undo.prev);}
+    const l=getActLog();
+    l.unshift({t:Date.now(),by:(typeof currentAccount!=='undefined'&&currentAccount&&currentAccount.name)||'Admin',type,desc,undo});
+    setActLog(l);
+  }catch(e){}
+}
+const ACT_ICONS={ks_add:'➕',ks_edit:'✏️',ks_del:'🗑️',exp_add:'💸',exp_del:'🗑️',appt_add:'📅',appt_del:'🗑️'};
+function renderActLog(){
+  const wrap=document.getElementById('act-log-list');
+  if(!wrap)return;
+  const l=getActLog();
+  if(!l.length){wrap.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13px;padding:30px;">لا توجد تحركات مسجلة بعد</div>';return;}
+  wrap.innerHTML=l.map((a,i)=>{
+    const d=new Date(a.t);
+    const time=d.toLocaleDateString('ar-IQ')+' '+d.toLocaleTimeString('ar-IQ',{hour:'2-digit',minute:'2-digit'});
+    return `<div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:700;">${ACT_ICONS[a.type]||'•'} ${a.desc}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${time} — بواسطة ${a.by}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button onclick="previewAction(${i})" style="background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">👁 معاينة</button>
+        <button onclick="undoAction(${i})" style="background:#ff8c00;border:none;border-radius:7px;padding:7px 12px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">↩ تراجع</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function previewAction(i){
+  const a=getActLog()[i];if(!a)return;
+  const u=a.undo||{};const r=u.record||u.prev||{};
+  let det='';
+  const row=(k,v)=>v?`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--border);"><span style="color:var(--muted);">${k}</span><b>${v}</b></div>`:'';
+  if(a.type.startsWith('ks')){
+    det=row('الاسم',r.n)+row('الهاتف',r.ph)+row('نوع الحالة',r.case)+row('السن',r.tooth)+row('التاريخ',r.date)
+       +row('المبلغ الكلي',r.tot)+row('الدين',r.dbt)+row('عدد الدفعات',(r.payments||[]).length||'')
+       +row('ملاحظات العمل',(r.workNotes||[]).length||'')+(r._photosDropped?row('الصور','أُسقطت من اللقطة (كبيرة)'):row('الصور',(r.photos||[]).length||''));
+    if(a.type==='ks_add')det=row('المعرف',u.id)+'<div style="color:var(--muted);font-size:12px;padding:6px 0;">التراجع سيحذف هذا الكيسشيت</div>';
+  }else if(a.type.startsWith('exp')){
+    det=row('الوصف',r.desc)+row('المبلغ',r.amt)+row('التاريخ',r.date)+row('التصنيف',r.cat);
+  }else if(a.type.startsWith('appt')){
+    const m=u.match||r;
+    det=row('الاسم',m.n)+row('اليوم',u.day)+row('الوقت',m.t||m.f)+row('النوع',r.tp)+row('ملاحظة',r.nt);
+  }
+  const mod=document.createElement('div');
+  mod.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  mod.innerHTML=`<div style="background:var(--card);border-radius:12px;padding:18px;max-width:400px;width:92%;direction:rtl;max-height:80vh;overflow:auto;">
+    <div style="font-size:14px;font-weight:700;margin-bottom:10px;">${ACT_ICONS[a.type]||''} ${a.desc}</div>
+    <div style="font-size:13px;">${det||'<span style=\'color:var(--muted)\'>لا تفاصيل</span>'}</div>
+    <button onclick="this.closest('div[style*=fixed]').remove()" style="width:100%;margin-top:14px;background:var(--teal);border:none;border-radius:8px;padding:10px;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;">إغلاق</button>
+  </div>`;
+  mod.addEventListener('click',e=>{if(e.target===mod)mod.remove();});
+  document.body.appendChild(mod);
+}
+function undoAction(i){
+  const l=getActLog();const a=l[i];if(!a)return;
+  if(!confirm('التراجع عن:\n'+a.desc+'\n\nهل أنت متأكد؟'))return;
+  const u=a.undo||{};
+  try{
+    if(a.type==='ks_del'&&u.record){
+      if(typeof _fbDeletedIds!=='undefined')_fbDeletedIds.delete(String(u.record.id));
+      PTS.unshift(u.record);
+    }else if(a.type==='ks_add'&&u.id){
+      const idx=PTS.findIndex(p=>String(p.id)===String(u.id));
+      if(idx>=0){
+        if(typeof _fbDeletedIds!=='undefined')_fbDeletedIds.add(String(u.id));
+        if(typeof dbFS!=='undefined'&&dbFS&&currentUserUid)dbFS.collection('clinics').doc(currentUserUid).collection('patients').doc(String(u.id)).delete().catch(()=>{});
+        PTS.splice(idx,1);
+      }
+    }else if(a.type==='ks_edit'&&u.prev){
+      const idx=PTS.findIndex(p=>String(p.id)===String(u.prev.id));
+      if(idx>=0)PTS[idx]=u.prev;else PTS.unshift(u.prev);
+    }else if(a.type==='exp_add'&&u.record){
+      const idx=EXPS.findIndex(x=>x.desc===u.record.desc&&x.amt===u.record.amt&&x.date===u.record.date);
+      if(idx>=0)EXPS.splice(idx,1);
+    }else if(a.type==='exp_del'&&u.record){
+      EXPS.unshift(u.record);
+    }else if(a.type==='appt_add'&&u.day&&u.match){
+      const arr=xA[u.day]||[];
+      const idx=arr.findIndex(x=>x.n===u.match.n&&x.t===u.match.t);
+      if(idx>=0)arr.splice(idx,1);
+    }else if(a.type==='appt_del'&&u.day&&u.record){
+      if(!xA[u.day])xA[u.day]=[];
+      xA[u.day].push(u.record);
+    }else{alert('لا يمكن التراجع عن هذه الحركة');return;}
+    l.splice(i,1);setActLog(l);
+    saveAllToDB();
+    try{rPts(PTS);}catch(e){}try{rExp();}catch(e){}try{rCal();}catch(e){}
+    renderActLog();
+  }catch(e){alert('خطأ في التراجع: '+e.message);}
 }
 
 function updateSyncStatus(state){
@@ -6486,8 +6720,8 @@ let _saving=false;
 
   // ② Web App Manifest
   const manifest = {
-    name: 'إدارة العيادة',
-    short_name: 'العيادة',
+    name: 'ابو عزّ — عيادة د. مهند',
+    short_name: 'ابو عزّ',
     description: 'نظام إدارة عيادة الأسنان',
     start_url: './',
     display: 'standalone',
@@ -7013,6 +7247,13 @@ initDB().then(()=>{
     rPts(PTS);
     updateDBFolderLabel();
     setTimeout(autoDBSaveCheck, 3000);
+    // إعادة محاولة الرفع المعلق (فشل سابق مثل Transaction too big)
+    setTimeout(()=>{
+      if(typeof dbFS!=='undefined' && dbFS && currentUserUid && localStorage.getItem('fb_pending_sync')){
+        console.log('⤴️ إعادة رفع البيانات المعلقة...');
+        fbPushNow();
+      }
+    }, 5000);
   });
 }).catch(()=>{
   rPts(PTS);
@@ -7087,7 +7328,7 @@ applyClinicName();
             </svg>
           </div>
           <div style="direction:rtl;text-align:right;">
-            <div style="font-size:18px;font-weight:700;color:#fff;line-height:1.3;">اسم الطبيب</div>
+            <div style="font-size:18px;font-weight:700;color:#fff;line-height:1.3;">الدكتور مهند مديد جاسم</div>
             <div style="font-size:13px;color:#aaa;margin-top:2px;">بكالوريوس طب وجراحة الفم والاسنان</div>
             <div style="font-size:13px;color:#aaa;">B.D.S</div>
           </div>
@@ -7144,7 +7385,7 @@ applyClinicName();
       <div style="background:#1a2535;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
         <div style="flex:1;direction:rtl;">
           <div style="font-size:13px;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:6px;justify-content:center;">
-            <span>رقم الهاتف هنا</span>
+            <span>0772 274 4448 - 0751 159 3998</span>
             <i class="ti ti-phone" style="color:#2dc9b2;"></i>
           </div>
           <div style="font-size:12px;color:#aaa;text-align:center;">سوق سومر - الاستدارة الثانية - قيصرية عرائس مارسين</div>
